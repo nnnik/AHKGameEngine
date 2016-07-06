@@ -2,9 +2,9 @@ class GL
 {
 	static Init := GL.GL()
 	
-	static ALPHA_TEST := 0x0BC0, BLEND := 0x0BE2, TEXTURE_2D := 0x0DE1, DEPTH_TEST := 0x0B71
+	static ALPHA_TEST := 0x0BC0, BLEND := 0x0BE2, TEXTURE_2D := 0x0DE1, DEPTH_TEST := 0x0B71, CULL_FACE := 0x0B44
 	static SRC_ALPHA := 0x0302, ONE_MINUS_SRC_ALPHA := 0x0303
-	static DONT_CARE := 0x1100, GL_FASTEST := 0x1101, GL_NICEST := 0x1102
+	static DONT_CARE := 0x1100, FASTEST := 0x1101, NICEST := 0x1102
 	static NEVER := 0x0200, LESS := 0x0201,EQUAL := 0x0202, LEQUAL := 0x0203, GREATER := 0x0204, NOTEQUAL := 0x0205, GEQUAL := 0x0206, ALWAYS := 0x0207
 	static COLOR_BUFFER_BIT := 0x4000, DEPTH_BUFFER_BIT := 0x100
 	static MODELVIEW := 0x1700, PROJECTION := 0x1701
@@ -38,7 +38,7 @@ class GL
 	
 	Enable(cap)
 	{
-		return DllCall("opengl32\glEnable","UInt",Val)
+		return DllCall("opengl32\glEnable","UInt",cap)
 	}
 	
 	BlendFunc(src,target)
@@ -591,10 +591,13 @@ Triangle.Compile()
 Loop % TriangleCount
 	World.Add(0,0,-A_Index*5,Triangle)
 Gui.Show()
+GL.Enable(GL.DEPTH_TEST)
+GL.DepthFunc(GL.GREATER)
+GL.ClearDepth(-Cam.ClipFar)
 MouseMove,A_ScreenWidth/2,A_ScreenHeight/2,0
 Loop
 {
-	GL.Clear(GL.COLOR_BUFFER_BIT)
+	GL.Clear(GL.COLOR_BUFFER_BIT|GL.DEPTH_BUFFER_BIT)
 	MouseGetPos,newX,newY
 	MouseMove,A_ScreenWidth/2,A_ScreenHeight/2,0
 	Cam.LocalMove((GetKeyState("w")-GetKeyState("s"))*0.2,0,(GetKeyState("a")-GetKeyState("d"))*0.2)
